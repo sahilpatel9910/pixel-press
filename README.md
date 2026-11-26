@@ -115,8 +115,16 @@ That writes:
 - `dist/Pixel-Press.zip`: the double-click download, with the three workflows and *How to Install.html*
 - `quick-actions/install-quick-actions.sh`: a Terminal installer (`--uninstall` removes everything)
 
-To publish a release, attach `dist/Pixel-Press.zip` to a GitHub release with that exact file name,
-so the download link above keeps working.
+### Publish a release
+
+Releases are built by GitHub Actions, so there's nothing to upload by hand:
+
+1. Open the **Actions** tab → **Release** → **Run workflow**.
+2. Type a version such as `1.1.0` and click **Run workflow**.
+
+It checks the scripts, builds `Pixel-Press.zip` from `main`, and publishes release `v1.1.0` with the
+zip attached and notes from [`.github/release-notes.md`](.github/release-notes.md) plus the changes
+since the last release. The README's download link always points to the newest release.
 
 ### Project layout
 

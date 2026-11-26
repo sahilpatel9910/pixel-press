@@ -1,0 +1,63 @@
+# One-click release: Actions → Release → Run workflow → type a version → Run.
+# Builds Pixel-Press.zip from the latest code and publishes it as a GitHub release.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number, e.g. 1.0.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check the version number
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version must look like 1.0.0 (got '$VERSION')"
+            exit 1
+          fi
+          if gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Release v$VERSION already exists. Use a new version number."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Check the scripts
+        run: |
+          bash -n scripts/convert-images.sh
+          python3 -c "import json; json.load(open('.claude-plugin/plugin.json')); json.load(open('.claude-plugin/marketplace.json'))"
+
+      - name: Build Pixel-Press.zip
+        run: |
+          python3 quick-actions/build-installer.py
+          bash -n quick-actions/install-quick-actions.sh
+          test -s dist/Pixel-Press.zip
+          python3 -c "import zipfile; n = zipfile.ZipFile('dist/Pixel-Press.zip').namelist(); assert sum(x.endswith('.workflow/Contents/document.wflow') for x in n) == 3, n; print(len(n), 'files in zip')"
+
+      - name: Publish the release
+        run: |
+          sed "s/{{VERSION}}/$VERSION/g" .github/release-notes.md > "$RUNNER_TEMP/notes.md"
+          gh release create "v$VERSION" dist/Pixel-Press.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Pixel Press $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --generate-notes \
+            --latest
+          echo "### Released Pixel Press $VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://github.com/$GITHUB_REPOSITORY/releases/tag/v$VERSION" >> "$GITHUB_STEP_SUMMARY"

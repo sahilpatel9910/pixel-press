@@ -149,7 +149,9 @@ def info_plist(name):
     }]}).decode()
 
 def wflow(opts):
-    u = lambda: str(uuid.uuid4()).upper()
+    # Stable IDs, so rebuilding gives identical files.
+    ids = iter(range(3))
+    u = lambda: str(uuid.uuid5(uuid.NAMESPACE_URL, f"pixel-press/{opts}/{next(ids)}")).upper()
     return plistlib.dumps({
       "AMApplicationBuild": "523", "AMApplicationVersion": "2.10", "AMDocumentVersion": "2",
       "actions": [{"action": {
@@ -195,7 +197,7 @@ def wflow(opts):
     }).decode()
 
 def heredoc(path, text):
-    d = "DC_EOF_" + uuid.uuid4().hex[:8].upper()
+    d = "DC_EOF_" + uuid.uuid5(uuid.NAMESPACE_URL, path + text).hex[:8].upper()
     assert d not in text
     return f"cat > {path} <<'{d}'\n{text}{'' if text.endswith(chr(10)) else chr(10)}{d}\n"
 
