@@ -13,7 +13,7 @@ Convert images for the user with the Desktop Converter script. Their request: $A
    - "for web" means `--to jpg --max 1600 --quality 80` (or `webp` if they asked for it).
 2. If more than 20 files would be converted, say how many and ask before going on.
 3. Run:
-   `bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] [--quality N] [--out DIR] FILES...`
+   `bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] [--quality N] [--target SIZE] [--out DIR] FILES...`
 4. Tell the user in a line or two what was converted, the size saved and where the files are
    (default `~/Desktop/Converted`). If something failed, say which file and why, and how to fix it.
 

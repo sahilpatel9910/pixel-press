@@ -9,7 +9,7 @@ Use the bundled script. It runs on macOS's built-in `sips`, so nothing needs ins
 except WebP output, which needs `brew install webp`.
 
 ```
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] [--quality 1-100] [--out DIR] FILE_OR_FOLDER...
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] [--quality 1-100] [--target SIZE] [--out DIR] FILE_OR_FOLDER...
 ```
 
 - `--to`: jpg, png, heic, tiff, gif, bmp, pdf or webp.
@@ -32,7 +32,6 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] 
 | "transparent background", "screenshot", "logo" | `--to png` (JPG loses transparency) |
 | "make a PDF of this picture" | `--to pdf` |
 | "thumbnail" | `--to jpg --max 400 --quality 80` |
-
 | "under 1 MB", "smaller than 300 KB", "max 2 MB each" | `--to jpg --target 1MB` (the size they gave) |
 | "how big are these?" | `--info`, then report the count and sizes |
 
