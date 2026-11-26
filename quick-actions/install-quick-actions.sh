@@ -24,7 +24,7 @@ mkdir -p "$APP" "$SVC"
 for n in "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
 rm -rf "$SVC/Convert to JPG.workflow"
 mkdir -p "$SVC/Convert to JPG.workflow/Contents"
-cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_C16DA66D'
+cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_96C98099'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -57,8 +57,8 @@ cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_C16DA66D'
 	</array>
 </dict>
 </plist>
-DC_EOF_C16DA66D
-cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_D241F1C7'
+DC_EOF_96C98099
+cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_FE4D2271'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -452,7 +452,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>95ADE1AA-5C0B-4D23-A4C3-A74E75A71B25</string>
+				<string>C1E93DA5-2090-4346-AB8E-456556CFB654</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -462,9 +462,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>634FCABA-E864-4D89-B44A-3C878E80DFFE</string>
+				<string>82F55BC5-9A36-480A-B02E-37AACBAC80D0</string>
 				<key>UUID</key>
-				<string>4C23275E-8FA8-4DEC-9651-656D428D562F</string>
+				<string>8191BF3B-95B6-42CA-8275-9B12F0B6BC70</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -592,11 +592,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_D241F1C7
+DC_EOF_FE4D2271
 
 rm -rf "$SVC/Compress to Size….workflow"
 mkdir -p "$SVC/Compress to Size….workflow/Contents"
-cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_8D0C7539'
+cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_DC23CBA8'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -629,8 +629,8 @@ cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_8D0C7539
 	</array>
 </dict>
 </plist>
-DC_EOF_8D0C7539
-cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_1C32BE87'
+DC_EOF_DC23CBA8
+cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_3CC7FCD5'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1058,7 +1058,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>69B86C62-13C7-4787-9F53-EBF17F93D4E5</string>
+				<string>5D64015A-7BCA-45E6-98BB-3C5DBE4D4646</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1068,9 +1068,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>1CB967F7-1D8D-4CD9-8B82-21C41CBB1635</string>
+				<string>D9FFA50D-4C06-447F-A57F-5EED59E3B7D3</string>
 				<key>UUID</key>
-				<string>8E98276C-4E25-4507-9471-6F94010BEBC2</string>
+				<string>1E3354BD-11CB-4582-9EA9-03C398EC6412</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1198,11 +1198,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_1C32BE87
+DC_EOF_3CC7FCD5
 
 rm -rf "$SVC/Convert & Resize….workflow"
 mkdir -p "$SVC/Convert & Resize….workflow/Contents"
-cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_26504185'
+cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_D1D12BEF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1235,8 +1235,8 @@ cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_26504185
 	</array>
 </dict>
 </plist>
-DC_EOF_26504185
-cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_F0C87A64'
+DC_EOF_D1D12BEF
+cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_272267F1'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1673,7 +1673,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>7A808B11-A341-419D-8C7E-BEF4B470A90F</string>
+				<string>A5F55B24-B0E8-4EC8-8D2A-96C064D762C9</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1683,9 +1683,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>AC52B84D-886E-4604-B834-6C805032E838</string>
+				<string>15813BA9-ECF0-41F4-8342-E880BF0A53CF</string>
 				<key>UUID</key>
-				<string>386E08F3-8BCB-4559-B73E-6CA400D7D22F</string>
+				<string>81B3519F-70FF-4D8A-B663-C49E8052906A</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1813,7 +1813,7 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_F0C87A64
+DC_EOF_272267F1
 
 xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
 for n in "${NAMES[@]}"; do xattr -dr com.apple.quarantine "$SVC/$n.workflow" 2>/dev/null || true; done
