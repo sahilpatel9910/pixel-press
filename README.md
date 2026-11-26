@@ -24,7 +24,7 @@ Then start `claude` and ask away.
 
 - **Convert** between HEIC, JPG, PNG, TIFF, GIF, BMP and PDF, and from WebP, RAW and more
 - **Resize** to a maximum size in pixels (it only shrinks, never enlarges)
-- **Compress** photos for email or the web
+- **Compress** photos to a size you choose, like "under 500 KB"
 - **Whole folders** at once (Claude asks first if it's more than 20 files)
 
 It uses `sips`, the image tool built into every Mac, so nothing needs installing.
@@ -50,7 +50,9 @@ Turn them on once in **System Settings → General → Login Items & Extensions 
 Then right-click any image, several images or a folder → **Quick Actions**:
 
 - **Convert to JPG**: one click. Images that are already JPG are skipped.
-- **Compress for Email**: one click. Shrinks photos to 2000 px at good quality, usually 70–90% smaller.
+- **Compress to Size…**: shows how big your images are, then makes each one smaller than the size you
+  pick: 2 MB (email), 1 MB, 500 KB, 200 KB (web forms), 100 KB or any size you type. It keeps as much
+  quality as it can: quality is lowered first, then dimensions only if needed.
 - **Convert & Resize…**: pick a format (JPG, PNG, HEIC, PDF, TIFF) and a size. It remembers your last choice.
 
 A notification says what happened and how much space was saved, and Finder shows the new file.

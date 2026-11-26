@@ -17,7 +17,7 @@ COMMON_RUN = r'''
 if [ $# -gt 5 ] || [ -d "$1" ]; then notify "Converting…" "This can take a moment."; fi
 
 REPORT=$(/usr/bin/mktemp -t dconv)
-RESULT=$(/bin/bash "$SCRIPT" $OPTS --out "$OUT" --report "$REPORT" "$@" 2>&1)
+RESULT=$(/bin/bash "$SCRIPT" "${OPTS[@]}" --out "$OUT" --report "$REPORT" "$@" 2>&1)
 N=$(grep -c . "$REPORT")
 SKIP=$(printf '%s\n' "$RESULT" | sed -n 's/^Done: .*converted, \([0-9]*\) skipped.*/\1/p')
 FAIL=$(printf '%s\n' "$RESULT" | sed -n 's/^Done: .*skipped, \([0-9]*\) failed.*/\1/p')
@@ -30,11 +30,13 @@ if [ "$N" -gt 0 ]; then
   BODY="$SIZES"
   [ "${SKIP:-0}" -gt 0 ] && BODY="$BODY · $SKIP already $LABEL"
   [ "${FAIL:-0}" -gt 0 ] && BODY="$BODY · $FAIL couldn't be converted"
+  OVER=$(printf '%s\n' "$RESULT" | sed -n 's/^Over target: //p')
+  [ -n "$OVER" ] && BODY="$BODY · $OVER couldn't get $LABEL"
   notify "$N $WORD $DONE_VERB" "$BODY"
   /usr/bin/open -R "$FIRST"
 elif [ "${SKIP:-0}" -gt 0 ]; then
   rmdir "$OUT" 2>/dev/null
-  notify "Nothing to convert" "Already $LABEL."
+  notify "Nothing to do" "Already $LABEL."
 else
   rmdir "$OUT" 2>/dev/null
   WHY=$(printf '%s\n' "$RESULT" | grep -E '^(Error:|✗)' | head -1 | sed -e 's/^Error: //' -e 's/^✗ //')
@@ -43,16 +45,27 @@ fi
 exit 0
 '''
 
-DIALOG = r'''PREFS="$DC/last-choice"
+SUMMARY = r'''INFO=$(/bin/bash "$SCRIPT" --to jpg --info "$@" 2>/dev/null)
+if [ -z "$INFO" ]; then alert "There are no images in what you selected."; exit 0; fi
+read COUNT TOTAL LARGEST <<INFOEOF
+$INFO
+INFOEOF
+hs() { awk -v b="$1" 'BEGIN { if (b >= 1048576) printf "%.1f MB", b / 1048576; else printf "%d KB", int(b / 1024 + 0.5) }'; }
+if [ "$COUNT" = 1 ]; then SUMMARY="Selected: 1 image, $(hs "$TOTAL")"
+else SUMMARY="Selected: $COUNT images, $(hs "$TOTAL") in total (largest $(hs "$LARGEST"))"; fi
+
+'''
+
+DIALOG = SUMMARY + r'''PREFS="$DC/last-choice"
 LAST_FMT=JPG; LAST_SIZE="Keep original size"
 if [ -f "$PREFS" ]; then LAST_FMT=$(sed -n 1p "$PREFS"); LAST_SIZE=$(sed -n 2p "$PREFS"); fi
 case "$LAST_FMT" in JPG|PNG|HEIC|PDF|TIFF) ;; *) LAST_FMT=JPG ;; esac
 case "$LAST_SIZE" in "Keep original size"|"Large - 2560 px"|"Medium - 1600 px"|"Small - 1024 px"|"Thumbnail - 400 px") ;; *) LAST_SIZE="Keep original size" ;; esac
 
-FMT=$(/usr/bin/osascript - "$LAST_FMT" <<'APPLESCRIPT'
+FMT=$(/usr/bin/osascript - "$LAST_FMT" "$SUMMARY" <<'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Desktop Converter" with prompt "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
+  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Desktop Converter" with prompt (item 2 of argv) & return & return & "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -60,10 +73,10 @@ APPLESCRIPT
 )
 [ -n "$FMT" ] || exit 0
 
-SIZE=$(/usr/bin/osascript - "$LAST_SIZE" <<'APPLESCRIPT'
+SIZE=$(/usr/bin/osascript - "$LAST_SIZE" "$SUMMARY" <<'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Desktop Converter" with prompt "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
+  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Desktop Converter" with prompt (item 2 of argv) & return & return & "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -74,15 +87,43 @@ APPLESCRIPT
 mkdir -p "$DC" && printf '%s\n%s\n' "$FMT" "$SIZE" > "$PREFS"
 case "$SIZE" in Large*) MAX=2560 ;; Medium*) MAX=1600 ;; Small*) MAX=1024 ;; Thumbnail*) MAX=400 ;; *) MAX="" ;; esac
 LOWER=$(printf '%s' "$FMT" | tr '[:upper:]' '[:lower:]')
-OPTS="--to $LOWER"
-[ -n "$MAX" ] && OPTS="$OPTS --max $MAX" || OPTS="$OPTS --skip-same"
-case "$LOWER" in jpg|heic) OPTS="$OPTS --quality 85" ;; esac
+OPTS=(--to "$LOWER")
+[ -n "$MAX" ] && OPTS+=(--max "$MAX") || OPTS+=(--skip-same)
+case "$LOWER" in jpg|heic) OPTS+=(--quality 85) ;; esac
 LABEL="$FMT"; DONE_VERB="converted to $FMT"
 '''
 
+COMPRESS = SUMMARY + r'''PREFS="$DC/last-target"
+LAST=$(cat "$PREFS" 2>/dev/null)
+case "$LAST" in "2 MB - good for email"|"1 MB"|"500 KB"|"200 KB - good for web forms"|"100 KB"|"Custom size...") ;; *) LAST="2 MB - good for email" ;; esac
+
+PICK=$(/usr/bin/osascript - "$LAST" "$SUMMARY" 2>/dev/null <<'APPLESCRIPT'
+on run argv
+  activate
+  set picked to choose from list {"2 MB - good for email", "1 MB", "500 KB", "200 KB - good for web forms", "100 KB", "Custom size..."} with title "Compress to Size" with prompt (item 2 of argv) & return & return & "Make each image smaller than:" default items {item 1 of argv} OK button name "Compress" cancel button name "Cancel"
+  if picked is false then return ""
+  set choice to item 1 of picked
+  if choice is "Custom size..." then
+    set r to display dialog "Make each image smaller than:" & return & "(for example 300 KB or 1.5 MB)" default answer "300 KB" with title "Compress to Size" buttons {"Cancel", "Compress"} default button "Compress" cancel button "Cancel"
+    return "custom:" & (text returned of r)
+  end if
+  return choice
+end run
+APPLESCRIPT
+)
+[ -n "$PICK" ] || exit 0
+
+case "$PICK" in
+  custom:*) TARGET="${PICK#custom:}"; mkdir -p "$DC" && echo "Custom size..." > "$PREFS" ;;
+  *)        TARGET="${PICK%% - *}"; mkdir -p "$DC" && echo "$PICK" > "$PREFS" ;;
+esac
+OPTS=(--to jpg --target "$TARGET")
+LABEL="under $TARGET"; DONE_VERB="compressed"
+'''
+
 ACTIONS = [
-  ("Convert to JPG",       'OPTS="--to jpg --quality 90 --skip-same"; LABEL=JPG; DONE_VERB="converted to JPG"\n'),
-  ("Compress for Email",   'OPTS="--to jpg --max 2000 --quality 75"; LABEL=small; DONE_VERB="compressed"\n'),
+  ("Convert to JPG",       'OPTS=(--to jpg --quality 90 --skip-same); LABEL=JPG; DONE_VERB="converted to JPG"\n'),
+  ("Compress to Size…",    COMPRESS),
   ("Convert & Resize…",    DIALOG),
 ]
 OLD_NAMES = ["Convert to PNG", "Make PDF"]
@@ -162,8 +203,8 @@ set -e
 
 APP="$HOME/Library/Application Support/Desktop Converter"
 SVC="$HOME/Library/Services"
-NAMES=("Convert to JPG" "Compress for Email" "Convert & Resize…")
-OLD=("Convert to PNG" "Make PDF")
+NAMES=("Convert to JPG" "Compress to Size…" "Convert & Resize…")
+OLD=("Convert to PNG" "Make PDF" "Compress for Email")
 
 if [ "${1:-}" = "--uninstall" ]; then
   for n in "${NAMES[@]}" "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
@@ -188,7 +229,7 @@ out.append('''xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
 for n in "${NAMES[@]}"; do xattr -dr com.apple.quarantine "$SVC/$n.workflow" 2>/dev/null || true; done
 /System/Library/CoreServices/pbs -update 2>/dev/null || true
 
-echo "✔ Installed 3 Quick Actions: Convert to JPG, Compress for Email, Convert & Resize…"
+echo "✔ Installed 3 Quick Actions: Convert to JPG, Compress to Size…, Convert & Resize…"
 echo
 echo "  Turn them on once: System Settings > General > Login Items & Extensions >"
 echo "  Extensions > Finder, or right-click an image > Quick Actions > Customise…"

@@ -15,6 +15,10 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] 
 - `--to`: jpg, png, heic, tiff, gif, bmp, pdf or webp.
 - `--max`: longest side in pixels. Images are only ever shrunk, never enlarged.
 - `--quality`: for jpg, heic and webp. 75–85 is a good balance; lower is smaller.
+- `--target SIZE`: make each image smaller than SIZE (e.g. `500KB`, `1.5MB`); jpg or heic only.
+  Lowers quality first, then dimensions. Files already under SIZE are skipped.
+- `--info`: print `COUNT TOTAL_BYTES LARGEST_BYTES` for the images without converting. Use it to
+  tell the user how big their images are now before asking what size they want.
 - `--out`: output folder. Default `~/Desktop/Converted`.
 - A folder converts the images directly inside it (not subfolders).
 
@@ -23,14 +27,14 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] 
 | The user says | Use |
 |---|---|
 | "convert to JPG", "make it open on Windows" | `--to jpg --quality 90` |
-| "smaller", "compress", "for email", "under a few MB" | `--to jpg --max 2000 --quality 75` |
+| "smaller", "compress", "for email" | `--to jpg --target 2MB` |
 | "for my website", "for web" | `--to jpg --max 1600 --quality 80`, or `--to webp` if asked |
 | "transparent background", "screenshot", "logo" | `--to png` (JPG loses transparency) |
 | "make a PDF of this picture" | `--to pdf` |
 | "thumbnail" | `--to jpg --max 400 --quality 80` |
 
-If a target size like "under 1 MB" isn't met, run again with a lower `--quality` or `--max`,
-into a fresh output folder, and tell the user what you changed.
+| "under 1 MB", "smaller than 300 KB", "max 2 MB each" | `--to jpg --target 1MB` (the size they gave) |
+| "how big are these?" | `--info`, then report the count and sizes |
 
 ## Rules
 
