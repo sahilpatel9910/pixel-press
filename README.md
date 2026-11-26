@@ -37,3 +37,15 @@ macOS and Claude Code 2.1 or later.
 ## License
 
 MIT
+
+## Right-click Quick Actions (no Claude needed)
+
+Run once on your Mac:
+
+```bash
+bash quick-actions/install-quick-actions.sh
+```
+
+Then right-click any image (or several) in Finder → **Quick Actions** → **Convert to JPG**,
+**Convert to PNG**, **Compress for Email** or **Make PDF**. Results go into a `Converted` folder next
+to the images. Remove them with `bash quick-actions/install-quick-actions.sh --uninstall`.
