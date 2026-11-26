@@ -19,7 +19,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] 
   Lowers quality first, then dimensions. Files already under SIZE are skipped.
 - `--info`: print `COUNT TOTAL_BYTES LARGEST_BYTES` for the images without converting. Use it to
   tell the user how big their images are now before asking what size they want.
-- `--out`: output folder. Default `~/Desktop/Converted`.
+- `--out`: output folder. Always pass the folder the originals are in, so new files land next to them.
+- `--suffix TEXT`: added to new names. Use `" (compressed)"` with `--target`, and `" (1600px)"`-style with `--max`.
 - A folder converts the images directly inside it (not subfolders).
 
 ## Picking settings from plain requests
@@ -37,8 +38,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] 
 
 ## Rules
 
-- Never delete, move or overwrite the originals. The script already writes to a separate folder
-  and never overwrites; don't work around that.
+- Never delete, move or overwrite the originals. The script never overwrites (a taken name gets
+  " 2", " 3" …); don't work around that.
 - If no files were named, list the images on `~/Desktop` (or the folder they mentioned) and ask which.
 - Ask before converting more than 20 files at once.
 - Afterwards, tell the user in a line or two: how many converted, size before and after, and where they are.

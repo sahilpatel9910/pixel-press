@@ -24,7 +24,7 @@ mkdir -p "$APP" "$SVC"
 for n in "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
 rm -rf "$SVC/Convert to JPG.workflow"
 mkdir -p "$SVC/Convert to JPG.workflow/Contents"
-cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_0C1FC432'
+cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_C16DA66D'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -57,8 +57,8 @@ cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_0C1FC432'
 	</array>
 </dict>
 </plist>
-DC_EOF_0C1FC432
-cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_09D61AEA'
+DC_EOF_C16DA66D
+cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_D241F1C7'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -127,7 +127,8 @@ DC="$HOME/Library/Application Support/Desktop Converter"
 notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
 alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
-if [ -d "$1" ]; then OUT="$1/Converted"; else OUT="$(dirname "$1")/Converted"; fi
+# New files go right next to the originals (inside the folder, if a folder was picked).
+if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
 SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
@@ -142,12 +143,13 @@ cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #
 # --target SIZE  make each image smaller than SIZE (e.g. 500KB, 1.5MB); jpg or heic only.
 #                Lowers quality first, then dimensions. Files already under SIZE are skipped.
+# --suffix TEXT  add TEXT to new file names, e.g. " (compressed)" gives "photo (compressed).jpg"
 # --info         print "COUNT TOTAL_BYTES LARGEST_BYTES" for the images and exit
 # --skip-same  skip files already in the target format (when not resizing)
 # --report     write the paths of the new files to FILE, one per line
 #
 # Originals are never modified. Results go to --out (default ~/Desktop/Converted).
-# An existing file is never overwritten: "photo.jpg" becomes "photo-1.jpg", and so on.
+# An existing file is never overwritten: "photo.jpg" becomes "photo 2.jpg", and so on.
 
 set -u
 
@@ -157,6 +159,7 @@ QUALITY=""
 OUT="$HOME/Desktop/Converted"
 SKIP_SAME=""
 REPORT=""
+SUFFIX=""
 TARGET=""
 INFO=""
 INPUTS=()
@@ -172,8 +175,9 @@ while [ $# -gt 0 ]; do
     --skip-same) SKIP_SAME=1; shift ;;
     --target)  TARGET="${2:-}"; shift 2 ;;
     --info)    INFO=1; shift ;;
+    --suffix)  SUFFIX="${2:-}"; shift 2 ;;
     --report)  REPORT="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     --)        shift; while [ $# -gt 0 ]; do INPUTS+=("$1"); shift; done ;;
     -*)        die "unknown option $1" ;;
     *)         INPUTS+=("$1"); shift ;;
@@ -270,8 +274,8 @@ fi
 mkdir -p "$OUT" || die "can't create output folder $OUT"
 
 unique_path() {
-  local base="$1" ext="$2" n=1 path="$OUT/$1.$2"
-  while [ -e "$path" ]; do path="$OUT/$base-$n.$ext"; n=$((n + 1)); done
+  local base="$1" ext="$2" n=2 path="$OUT/$1.$2"
+  while [ -e "$path" ]; do path="$OUT/$base $n.$ext"; n=$((n + 1)); done
   printf '%s' "$path"
 }
 
@@ -327,7 +331,7 @@ for f in "${FILES[@]}"; do
     echo "– $name: already under $TARGET_LABEL, skipped"
     skipped=$((skipped + 1)); continue
   fi
-  dest=$(unique_path "$stem" "$TO")
+  dest=$(unique_path "$stem$SUFFIX" "$TO")
 
   # Only shrink, never enlarge.
   resize=""
@@ -417,10 +421,8 @@ if [ "$N" -gt 0 ]; then
   notify "$N $WORD $DONE_VERB" "$BODY"
   /usr/bin/open -R "$FIRST"
 elif [ "${SKIP:-0}" -gt 0 ]; then
-  rmdir "$OUT" 2&gt;/dev/null
   notify "Nothing to do" "Already $LABEL."
 else
-  rmdir "$OUT" 2&gt;/dev/null
   WHY=$(printf '%s\n' "$RESULT" | grep -E '^(Error:|✗)' | head -1 | sed -e 's/^Error: //' -e 's/^✗ //')
   alert "Couldn't convert: ${WHY:-unknown problem}"
 fi
@@ -450,7 +452,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>B0868D82-5921-48DE-9B8C-38EB89016CE9</string>
+				<string>95ADE1AA-5C0B-4D23-A4C3-A74E75A71B25</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -460,9 +462,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>E45E02EA-FE9B-486D-B199-A17691CFF784</string>
+				<string>634FCABA-E864-4D89-B44A-3C878E80DFFE</string>
 				<key>UUID</key>
-				<string>8C3868D7-E94A-4BAB-8E62-6A1CCEF7E0A4</string>
+				<string>4C23275E-8FA8-4DEC-9651-656D428D562F</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -590,11 +592,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_09D61AEA
+DC_EOF_D241F1C7
 
 rm -rf "$SVC/Compress to Size….workflow"
 mkdir -p "$SVC/Compress to Size….workflow/Contents"
-cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_066A5BF0'
+cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_8D0C7539'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -627,8 +629,8 @@ cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_066A5BF0
 	</array>
 </dict>
 </plist>
-DC_EOF_066A5BF0
-cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_C02842F4'
+DC_EOF_8D0C7539
+cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_1C32BE87'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -697,7 +699,8 @@ DC="$HOME/Library/Application Support/Desktop Converter"
 notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
 alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
-if [ -d "$1" ]; then OUT="$1/Converted"; else OUT="$(dirname "$1")/Converted"; fi
+# New files go right next to the originals (inside the folder, if a folder was picked).
+if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
 SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
@@ -712,12 +715,13 @@ cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #
 # --target SIZE  make each image smaller than SIZE (e.g. 500KB, 1.5MB); jpg or heic only.
 #                Lowers quality first, then dimensions. Files already under SIZE are skipped.
+# --suffix TEXT  add TEXT to new file names, e.g. " (compressed)" gives "photo (compressed).jpg"
 # --info         print "COUNT TOTAL_BYTES LARGEST_BYTES" for the images and exit
 # --skip-same  skip files already in the target format (when not resizing)
 # --report     write the paths of the new files to FILE, one per line
 #
 # Originals are never modified. Results go to --out (default ~/Desktop/Converted).
-# An existing file is never overwritten: "photo.jpg" becomes "photo-1.jpg", and so on.
+# An existing file is never overwritten: "photo.jpg" becomes "photo 2.jpg", and so on.
 
 set -u
 
@@ -727,6 +731,7 @@ QUALITY=""
 OUT="$HOME/Desktop/Converted"
 SKIP_SAME=""
 REPORT=""
+SUFFIX=""
 TARGET=""
 INFO=""
 INPUTS=()
@@ -742,8 +747,9 @@ while [ $# -gt 0 ]; do
     --skip-same) SKIP_SAME=1; shift ;;
     --target)  TARGET="${2:-}"; shift 2 ;;
     --info)    INFO=1; shift ;;
+    --suffix)  SUFFIX="${2:-}"; shift 2 ;;
     --report)  REPORT="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     --)        shift; while [ $# -gt 0 ]; do INPUTS+=("$1"); shift; done ;;
     -*)        die "unknown option $1" ;;
     *)         INPUTS+=("$1"); shift ;;
@@ -840,8 +846,8 @@ fi
 mkdir -p "$OUT" || die "can't create output folder $OUT"
 
 unique_path() {
-  local base="$1" ext="$2" n=1 path="$OUT/$1.$2"
-  while [ -e "$path" ]; do path="$OUT/$base-$n.$ext"; n=$((n + 1)); done
+  local base="$1" ext="$2" n=2 path="$OUT/$1.$2"
+  while [ -e "$path" ]; do path="$OUT/$base $n.$ext"; n=$((n + 1)); done
   printf '%s' "$path"
 }
 
@@ -897,7 +903,7 @@ for f in "${FILES[@]}"; do
     echo "– $name: already under $TARGET_LABEL, skipped"
     skipped=$((skipped + 1)); continue
   fi
-  dest=$(unique_path "$stem" "$TO")
+  dest=$(unique_path "$stem$SUFFIX" "$TO")
 
   # Only shrink, never enlarge.
   resize=""
@@ -997,7 +1003,7 @@ case "$PICK" in
   custom:*) TARGET="${PICK#custom:}"; mkdir -p "$DC" &amp;&amp; echo "Custom size..." &gt; "$PREFS" ;;
   *)        TARGET="${PICK%% - *}"; mkdir -p "$DC" &amp;&amp; echo "$PICK" &gt; "$PREFS" ;;
 esac
-OPTS=(--to jpg --target "$TARGET")
+OPTS=(--to jpg --target "$TARGET" --suffix " (compressed)")
 LABEL="under $TARGET"; DONE_VERB="compressed"
 
 if [ $# -gt 5 ] || [ -d "$1" ]; then notify "Converting…" "This can take a moment."; fi
@@ -1021,10 +1027,8 @@ if [ "$N" -gt 0 ]; then
   notify "$N $WORD $DONE_VERB" "$BODY"
   /usr/bin/open -R "$FIRST"
 elif [ "${SKIP:-0}" -gt 0 ]; then
-  rmdir "$OUT" 2&gt;/dev/null
   notify "Nothing to do" "Already $LABEL."
 else
-  rmdir "$OUT" 2&gt;/dev/null
   WHY=$(printf '%s\n' "$RESULT" | grep -E '^(Error:|✗)' | head -1 | sed -e 's/^Error: //' -e 's/^✗ //')
   alert "Couldn't convert: ${WHY:-unknown problem}"
 fi
@@ -1054,7 +1058,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>1033BFB1-1FB7-4DBC-885A-DE5D720DD616</string>
+				<string>69B86C62-13C7-4787-9F53-EBF17F93D4E5</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1064,9 +1068,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>C65D8242-FD8C-4D97-A5CC-BB1075F714C1</string>
+				<string>1CB967F7-1D8D-4CD9-8B82-21C41CBB1635</string>
 				<key>UUID</key>
-				<string>487FBEEC-259D-4168-82CE-1458CD55CBAF</string>
+				<string>8E98276C-4E25-4507-9471-6F94010BEBC2</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1194,11 +1198,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_C02842F4
+DC_EOF_1C32BE87
 
 rm -rf "$SVC/Convert & Resize….workflow"
 mkdir -p "$SVC/Convert & Resize….workflow/Contents"
-cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_634BED72'
+cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_26504185'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1231,8 +1235,8 @@ cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_634BED72
 	</array>
 </dict>
 </plist>
-DC_EOF_634BED72
-cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_FE24F806'
+DC_EOF_26504185
+cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_F0C87A64'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1301,7 +1305,8 @@ DC="$HOME/Library/Application Support/Desktop Converter"
 notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
 alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
-if [ -d "$1" ]; then OUT="$1/Converted"; else OUT="$(dirname "$1")/Converted"; fi
+# New files go right next to the originals (inside the folder, if a folder was picked).
+if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
 SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
@@ -1316,12 +1321,13 @@ cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #
 # --target SIZE  make each image smaller than SIZE (e.g. 500KB, 1.5MB); jpg or heic only.
 #                Lowers quality first, then dimensions. Files already under SIZE are skipped.
+# --suffix TEXT  add TEXT to new file names, e.g. " (compressed)" gives "photo (compressed).jpg"
 # --info         print "COUNT TOTAL_BYTES LARGEST_BYTES" for the images and exit
 # --skip-same  skip files already in the target format (when not resizing)
 # --report     write the paths of the new files to FILE, one per line
 #
 # Originals are never modified. Results go to --out (default ~/Desktop/Converted).
-# An existing file is never overwritten: "photo.jpg" becomes "photo-1.jpg", and so on.
+# An existing file is never overwritten: "photo.jpg" becomes "photo 2.jpg", and so on.
 
 set -u
 
@@ -1331,6 +1337,7 @@ QUALITY=""
 OUT="$HOME/Desktop/Converted"
 SKIP_SAME=""
 REPORT=""
+SUFFIX=""
 TARGET=""
 INFO=""
 INPUTS=()
@@ -1346,8 +1353,9 @@ while [ $# -gt 0 ]; do
     --skip-same) SKIP_SAME=1; shift ;;
     --target)  TARGET="${2:-}"; shift 2 ;;
     --info)    INFO=1; shift ;;
+    --suffix)  SUFFIX="${2:-}"; shift 2 ;;
     --report)  REPORT="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     --)        shift; while [ $# -gt 0 ]; do INPUTS+=("$1"); shift; done ;;
     -*)        die "unknown option $1" ;;
     *)         INPUTS+=("$1"); shift ;;
@@ -1444,8 +1452,8 @@ fi
 mkdir -p "$OUT" || die "can't create output folder $OUT"
 
 unique_path() {
-  local base="$1" ext="$2" n=1 path="$OUT/$1.$2"
-  while [ -e "$path" ]; do path="$OUT/$base-$n.$ext"; n=$((n + 1)); done
+  local base="$1" ext="$2" n=2 path="$OUT/$1.$2"
+  while [ -e "$path" ]; do path="$OUT/$base $n.$ext"; n=$((n + 1)); done
   printf '%s' "$path"
 }
 
@@ -1501,7 +1509,7 @@ for f in "${FILES[@]}"; do
     echo "– $name: already under $TARGET_LABEL, skipped"
     skipped=$((skipped + 1)); continue
   fi
-  dest=$(unique_path "$stem" "$TO")
+  dest=$(unique_path "$stem$SUFFIX" "$TO")
 
   # Only shrink, never enlarge.
   resize=""
@@ -1609,7 +1617,7 @@ mkdir -p "$DC" &amp;&amp; printf '%s\n%s\n' "$FMT" "$SIZE" &gt; "$PREFS"
 case "$SIZE" in Large*) MAX=2560 ;; Medium*) MAX=1600 ;; Small*) MAX=1024 ;; Thumbnail*) MAX=400 ;; *) MAX="" ;; esac
 LOWER=$(printf '%s' "$FMT" | tr '[:upper:]' '[:lower:]')
 OPTS=(--to "$LOWER")
-[ -n "$MAX" ] &amp;&amp; OPTS+=(--max "$MAX") || OPTS+=(--skip-same)
+[ -n "$MAX" ] &amp;&amp; OPTS+=(--max "$MAX" --suffix " (${MAX}px)") || OPTS+=(--skip-same)
 case "$LOWER" in jpg|heic) OPTS+=(--quality 85) ;; esac
 LABEL="$FMT"; DONE_VERB="converted to $FMT"
 
@@ -1634,10 +1642,8 @@ if [ "$N" -gt 0 ]; then
   notify "$N $WORD $DONE_VERB" "$BODY"
   /usr/bin/open -R "$FIRST"
 elif [ "${SKIP:-0}" -gt 0 ]; then
-  rmdir "$OUT" 2&gt;/dev/null
   notify "Nothing to do" "Already $LABEL."
 else
-  rmdir "$OUT" 2&gt;/dev/null
   WHY=$(printf '%s\n' "$RESULT" | grep -E '^(Error:|✗)' | head -1 | sed -e 's/^Error: //' -e 's/^✗ //')
   alert "Couldn't convert: ${WHY:-unknown problem}"
 fi
@@ -1667,7 +1673,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>FC19A5E7-E86D-459A-AAA5-5BF0935270ED</string>
+				<string>7A808B11-A341-419D-8C7E-BEF4B470A90F</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1677,9 +1683,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>C3672B87-0C36-4BDB-8356-61A440EDC76D</string>
+				<string>AC52B84D-886E-4604-B834-6C805032E838</string>
 				<key>UUID</key>
-				<string>C913A884-CF45-4DE1-AEB9-B4FF22D7957C</string>
+				<string>386E08F3-8BCB-4559-B73E-6CA400D7D22F</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1807,7 +1813,7 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_FE24F806
+DC_EOF_F0C87A64
 
 xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
 for n in "${NAMES[@]}"; do xattr -dr com.apple.quarantine "$SVC/$n.workflow" 2>/dev/null || true; done
@@ -1819,4 +1825,4 @@ echo "  Turn them on once: System Settings > General > Login Items & Extensions 
 echo "  Extensions > Finder, or right-click an image > Quick Actions > Customise…"
 echo
 echo "  Then right-click any image or folder in Finder > Quick Actions."
-echo "  Results go into a 'Converted' folder next to your images. Originals are never changed."
+echo "  New files are saved next to your images. Originals are never changed."

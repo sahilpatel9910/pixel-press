@@ -9,12 +9,13 @@
 #
 # --target SIZE  make each image smaller than SIZE (e.g. 500KB, 1.5MB); jpg or heic only.
 #                Lowers quality first, then dimensions. Files already under SIZE are skipped.
+# --suffix TEXT  add TEXT to new file names, e.g. " (compressed)" gives "photo (compressed).jpg"
 # --info         print "COUNT TOTAL_BYTES LARGEST_BYTES" for the images and exit
 # --skip-same  skip files already in the target format (when not resizing)
 # --report     write the paths of the new files to FILE, one per line
 #
 # Originals are never modified. Results go to --out (default ~/Desktop/Converted).
-# An existing file is never overwritten: "photo.jpg" becomes "photo-1.jpg", and so on.
+# An existing file is never overwritten: "photo.jpg" becomes "photo 2.jpg", and so on.
 
 set -u
 
@@ -24,6 +25,7 @@ QUALITY=""
 OUT="$HOME/Desktop/Converted"
 SKIP_SAME=""
 REPORT=""
+SUFFIX=""
 TARGET=""
 INFO=""
 INPUTS=()
@@ -39,8 +41,9 @@ while [ $# -gt 0 ]; do
     --skip-same) SKIP_SAME=1; shift ;;
     --target)  TARGET="${2:-}"; shift 2 ;;
     --info)    INFO=1; shift ;;
+    --suffix)  SUFFIX="${2:-}"; shift 2 ;;
     --report)  REPORT="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     --)        shift; while [ $# -gt 0 ]; do INPUTS+=("$1"); shift; done ;;
     -*)        die "unknown option $1" ;;
     *)         INPUTS+=("$1"); shift ;;
@@ -137,8 +140,8 @@ fi
 mkdir -p "$OUT" || die "can't create output folder $OUT"
 
 unique_path() {
-  local base="$1" ext="$2" n=1 path="$OUT/$1.$2"
-  while [ -e "$path" ]; do path="$OUT/$base-$n.$ext"; n=$((n + 1)); done
+  local base="$1" ext="$2" n=2 path="$OUT/$1.$2"
+  while [ -e "$path" ]; do path="$OUT/$base $n.$ext"; n=$((n + 1)); done
   printf '%s' "$path"
 }
 
@@ -194,7 +197,7 @@ for f in "${FILES[@]}"; do
     echo "– $name: already under $TARGET_LABEL, skipped"
     skipped=$((skipped + 1)); continue
   fi
-  dest=$(unique_path "$stem" "$TO")
+  dest=$(unique_path "$stem$SUFFIX" "$TO")
 
   # Only shrink, never enlarge.
   resize=""

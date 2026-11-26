@@ -8,8 +8,8 @@ A Claude Code plugin that converts, resizes and compresses images on your Mac. Y
 >
 > `/convert ~/Desktop/vacation 1600px jpg`
 
-Results go to `~/Desktop/Converted`. **Your originals are never changed, moved or deleted**, and an
-existing file is never overwritten (`photo.jpg` becomes `photo-1.jpg`).
+New files are saved next to the originals. **Your originals are never changed, moved or deleted**, and an
+existing file is never overwritten (`photo.jpg` becomes `photo 2.jpg`).
 
 ## Install
 
@@ -64,5 +64,5 @@ Then right-click any image, several images or a folder → **Quick Actions**:
 - **Convert & Resize…**: pick a format (JPG, PNG, HEIC, PDF, TIFF) and a size. It remembers your last choice.
 
 A notification says what happened and how much space was saved, and Finder shows the new file.
-Results go into a `Converted` folder next to the images; originals are never changed.
+New files are saved next to the originals, e.g. `beach (compressed).jpg`; originals are never changed.
 Remove them with `bash quick-actions/install-quick-actions.sh --uninstall`.

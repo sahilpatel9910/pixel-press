@@ -15,6 +15,6 @@ Convert images for the user with the Desktop Converter script. Their request: $A
 3. Run:
    `bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh --to FORMAT [--max PIXELS] [--quality N] [--target SIZE] [--out DIR] FILES...`
 4. Tell the user in a line or two what was converted, the size saved and where the files are
-   (default `~/Desktop/Converted`). If something failed, say which file and why, and how to fix it.
+   (next to the originals: pass `--out` with their folder). If something failed, say which file and why, and how to fix it.
 
 Never delete, move or overwrite the user's original files.

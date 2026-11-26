@@ -9,7 +9,8 @@ DC="$HOME/Library/Application Support/Desktop Converter"
 notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" >/dev/null 2>&1; }
 alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" >/dev/null 2>&1; }
 
-if [ -d "$1" ]; then OUT="$1/Converted"; else OUT="$(dirname "$1")/Converted"; fi
+# New files go right next to the originals (inside the folder, if a folder was picked).
+if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
 '''
 
 COMMON_RUN = r'''
@@ -34,10 +35,8 @@ if [ "$N" -gt 0 ]; then
   notify "$N $WORD $DONE_VERB" "$BODY"
   /usr/bin/open -R "$FIRST"
 elif [ "${SKIP:-0}" -gt 0 ]; then
-  rmdir "$OUT" 2>/dev/null
   notify "Nothing to do" "Already $LABEL."
 else
-  rmdir "$OUT" 2>/dev/null
   WHY=$(printf '%s\n' "$RESULT" | grep -E '^(Error:|✗)' | head -1 | sed -e 's/^Error: //' -e 's/^✗ //')
   alert "Couldn't convert: ${WHY:-unknown problem}"
 fi
@@ -87,7 +86,7 @@ mkdir -p "$DC" && printf '%s\n%s\n' "$FMT" "$SIZE" > "$PREFS"
 case "$SIZE" in Large*) MAX=2560 ;; Medium*) MAX=1600 ;; Small*) MAX=1024 ;; Thumbnail*) MAX=400 ;; *) MAX="" ;; esac
 LOWER=$(printf '%s' "$FMT" | tr '[:upper:]' '[:lower:]')
 OPTS=(--to "$LOWER")
-[ -n "$MAX" ] && OPTS+=(--max "$MAX") || OPTS+=(--skip-same)
+[ -n "$MAX" ] && OPTS+=(--max "$MAX" --suffix " (${MAX}px)") || OPTS+=(--skip-same)
 case "$LOWER" in jpg|heic) OPTS+=(--quality 85) ;; esac
 LABEL="$FMT"; DONE_VERB="converted to $FMT"
 '''
@@ -116,7 +115,7 @@ case "$PICK" in
   custom:*) TARGET="${PICK#custom:}"; mkdir -p "$DC" && echo "Custom size..." > "$PREFS" ;;
   *)        TARGET="${PICK%% - *}"; mkdir -p "$DC" && echo "$PICK" > "$PREFS" ;;
 esac
-OPTS=(--to jpg --target "$TARGET")
+OPTS=(--to jpg --target "$TARGET" --suffix " (compressed)")
 LABEL="under $TARGET"; DONE_VERB="compressed"
 '''
 
@@ -240,7 +239,7 @@ echo "  Turn them on once: System Settings > General > Login Items & Extensions 
 echo "  Extensions > Finder, or right-click an image > Quick Actions > Customise…"
 echo
 echo "  Then right-click any image or folder in Finder > Quick Actions."
-echo "  Results go into a 'Converted' folder next to your images. Originals are never changed."
+echo "  New files are saved next to your images. Originals are never changed."
 ''')
 open(f"{root}/quick-actions/install-quick-actions.sh", "w").write("".join(out))
 
