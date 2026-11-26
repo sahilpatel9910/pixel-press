@@ -14,7 +14,7 @@ existing file is never overwritten (`photo.jpg` becomes `photo-1.jpg`).
 ## Install
 
 ```bash
-claude plugin marketplace add YOUR-GITHUB-NAME/desktop-converter
+claude plugin marketplace add sahilpatel9910/desktop-converter
 claude plugin install desktop-converter@desktop-converter
 ```
 
