@@ -1,5 +1,5 @@
 #!/bin/bash
-# Desktop Converter: convert, resize and compress images.
+# Pixel Press: convert, resize and compress images.
 # Uses macOS's built-in `sips`. WebP output needs `cwebp` or ImageMagick (`magick`).
 # Written for the bash 3.2 that ships with macOS.
 #

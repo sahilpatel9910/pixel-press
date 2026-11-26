@@ -1,8 +1,22 @@
 {
-  "name": "desktop-converter",
-  "version": "0.2.0",
-  "description": "Convert, resize and compress images on your Mac by asking Claude. Originals are never touched.",
-  "author": { "name": "Sahil" },
-  "keywords": ["images", "convert", "heic", "jpg", "png", "resize", "compress", "mac"],
-  "license": "MIT"
+  "name": "pixel-press",
+  "version": "1.0.0",
+  "description": "Pixel Press: convert, resize and compress images on your Mac, including to an exact file size like 'under 500 KB'. Originals are never touched.",
+  "author": {
+    "name": "Sahil"
+  },
+  "keywords": [
+    "images",
+    "convert",
+    "compress",
+    "resize",
+    "heic",
+    "jpg",
+    "png",
+    "file-size",
+    "mac"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sahilpatel9910/pixel-press",
+  "repository": "https://github.com/sahilpatel9910/pixel-press"
 }

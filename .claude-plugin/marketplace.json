@@ -1,10 +1,12 @@
 {
-  "name": "desktop-converter",
-  "description": "Convert, resize and compress images on your Mac by asking Claude",
-  "owner": { "name": "Sahil" },
+  "name": "pixel-press",
+  "description": "Pixel Press: convert, resize and compress images on your Mac",
+  "owner": {
+    "name": "Sahil"
+  },
   "plugins": [
     {
-      "name": "desktop-converter",
+      "name": "pixel-press",
       "source": "./"
     }
   ]

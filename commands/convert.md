@@ -4,7 +4,7 @@ argument-hint: <files or folder> <format> [max pixels | under SIZE]
 allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/scripts/convert-images.sh:*), Bash(ls:*)
 ---
 
-Convert images for the user with the Desktop Converter script. Their request: $ARGUMENTS
+Convert images for the user with the Pixel Press script. Their request: $ARGUMENTS
 
 1. Work out the files, the target format and any size or quality wishes from the request.
    - Expand `~` and wildcards. If they named no files, list the image files on `~/Desktop` and ask which ones.

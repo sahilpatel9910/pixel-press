@@ -1,4 +1,4 @@
-# Desktop Converter
+# Pixel Press
 
 **Convert, resize and compress images on your Mac, just by right-clicking them.**
 
@@ -22,12 +22,12 @@ beach (1600px).jpg        ← Convert & Resize… at Medium size
 
 ## Download
 
-**[⬇ Download Desktop-Converter.zip](https://github.com/sahilpatel9910/desktop-converter/releases/latest/download/Desktop-Converter.zip)**
-from the [latest release](https://github.com/sahilpatel9910/desktop-converter/releases/latest).
+**[⬇ Download Pixel-Press.zip](https://github.com/sahilpatel9910/pixel-press/releases/latest/download/Pixel-Press.zip)**
+from the [latest release](https://github.com/sahilpatel9910/pixel-press/releases/latest).
 
 ### Install in 1 minute (no Terminal)
 
-1. **Unzip** the download: double-click `Desktop-Converter.zip`.
+1. **Unzip** the download: double-click `Pixel-Press.zip`.
 2. **Double-click** each of the three `.workflow` files and click **Install**.
    (System Settings may open afterwards. That's normal; just close it.)
 3. **Switch them on**: System Settings → General → Login Items & Extensions → Extensions → **Finder**,
@@ -49,7 +49,7 @@ Then right-click any image, several images or a folder → **Quick Actions**.
 
 ## Use it with Claude Code (optional)
 
-Desktop Converter is also a [Claude Code](https://claude.com/claude-code) plugin, so you can just ask:
+Pixel Press is also a [Claude Code](https://claude.com/claude-code) plugin, so you can just ask:
 
 > convert the HEIC photos on my Desktop to JPG
 >
@@ -60,11 +60,11 @@ Desktop Converter is also a [Claude Code](https://claude.com/claude-code) plugin
 Install it:
 
 ```bash
-claude plugin marketplace add sahilpatel9910/desktop-converter
+claude plugin marketplace add sahilpatel9910/pixel-press
 ```
 
 ```bash
-claude plugin install desktop-converter@desktop-converter
+claude plugin install pixel-press@pixel-press
 ```
 
 It needs Claude Code 2.1 or later. WebP output also needs `brew install webp`.
@@ -112,10 +112,10 @@ python3 quick-actions/build-installer.py
 
 That writes:
 
-- `dist/Desktop-Converter.zip`: the double-click download, with the three workflows and *How to Install.html*
+- `dist/Pixel-Press.zip`: the double-click download, with the three workflows and *How to Install.html*
 - `quick-actions/install-quick-actions.sh`: a Terminal installer (`--uninstall` removes everything)
 
-To publish a release, attach `dist/Desktop-Converter.zip` to a GitHub release with that exact file name,
+To publish a release, attach `dist/Pixel-Press.zip` to a GitHub release with that exact file name,
 so the download link above keeps working.
 
 ### Project layout

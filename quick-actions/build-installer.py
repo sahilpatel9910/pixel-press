@@ -1,13 +1,14 @@
 import plistlib, uuid, sys
-root = "/home/user/desktop-converter"
+import os
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 conv = open(f"{root}/scripts/convert-images.sh").read()
 
-COMMON_HEAD = r'''# Desktop Converter Quick Action
-DC="$HOME/Library/Application Support/Desktop Converter"
+COMMON_HEAD = r'''# Pixel Press Quick Action
+DC="$HOME/Library/Application Support/Pixel Press"
 [ $# -gt 0 ] || exit 0
 
-notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" >/dev/null 2>&1; }
-alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" >/dev/null 2>&1; }
+notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Pixel Press" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" >/dev/null 2>&1; }
+alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Pixel Press" message (item 1 of argv) as warning' -e 'end run' "$1" >/dev/null 2>&1; }
 
 # New files go right next to the originals (inside the folder, if a folder was picked).
 if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
@@ -63,7 +64,7 @@ case "$LAST_SIZE" in "Keep original size"|"Large - 2560 px"|"Medium - 1600 px"|"
 FMT=$(/usr/bin/osascript - "$LAST_FMT" "$SUMMARY" <<'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Desktop Converter" with prompt (item 2 of argv) & return & return & "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
+  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Pixel Press" with prompt (item 2 of argv) & return & return & "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -74,7 +75,7 @@ APPLESCRIPT
 SIZE=$(/usr/bin/osascript - "$LAST_SIZE" "$SUMMARY" <<'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Desktop Converter" with prompt (item 2 of argv) & return & return & "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
+  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Pixel Press" with prompt (item 2 of argv) & return & return & "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -199,7 +200,7 @@ def heredoc(path, text):
     return f"cat > {path} <<'{d}'\n{text}{'' if text.endswith(chr(10)) else chr(10)}{d}\n"
 
 out = ['''#!/bin/bash
-# Desktop Converter: installs Finder Quick Actions for images.
+# Pixel Press: installs Finder Quick Actions for images.
 # Run once with:  bash install-quick-actions.sh
 # Then right-click any image in Finder > Quick Actions.
 # To remove them later:  bash install-quick-actions.sh --uninstall
@@ -207,16 +208,16 @@ set -e
 
 [ "$(uname)" = "Darwin" ] || { echo "This installer is for macOS."; exit 1; }
 
-APP="$HOME/Library/Application Support/Desktop Converter"
+APP="$HOME/Library/Application Support/Pixel Press"
 SVC="$HOME/Library/Services"
 NAMES=("Convert to JPG" "Compress to Size…" "Convert & Resize…")
 OLD=("Convert to PNG" "Make PDF" "Compress for Email")
 
 if [ "${1:-}" = "--uninstall" ]; then
   for n in "${NAMES[@]}" "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
-  rm -rf "$APP"
+  rm -rf "$APP" "$HOME/Library/Application Support/Desktop Converter"
   /System/Library/CoreServices/pbs -update 2>/dev/null || true
-  echo "Removed the Desktop Converter Quick Actions."
+  echo "Removed the Pixel Press Quick Actions."
   exit 0
 fi
 
@@ -248,7 +249,7 @@ open(f"{root}/quick-actions/install-quick-actions.sh", "w").write("".join(out))
 # Shareable zip: double-click installers, no Terminal needed.
 import os, zipfile, shutil
 dist = f"{root}/dist"
-pkg = f"{dist}/Desktop Converter"
+pkg = f"{dist}/Pixel Press"
 shutil.rmtree(dist, ignore_errors=True)
 for name, opts in ACTIONS:
     c = f"{pkg}/{name}.workflow/Contents"
@@ -256,7 +257,7 @@ for name, opts in ACTIONS:
     open(f"{c}/Info.plist", "w").write(info_plist(name))
     open(f"{c}/document.wflow", "w").write(wflow(opts))
 open(f"{pkg}/How to Install.html", "w").write(open(f"{root}/quick-actions/how-to-install.html").read())
-zpath = f"{dist}/Desktop-Converter.zip"
+zpath = f"{dist}/Pixel-Press.zip"
 with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
     for dirpath, dirs, files in os.walk(pkg):
         dirs.sort()

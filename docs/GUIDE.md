@@ -1,6 +1,6 @@
-# Desktop Converter: User Guide
+# Pixel Press: User Guide
 
-Everything you need to install and use Desktop Converter, the right-click image tool for Mac.
+Everything you need to install and use Pixel Press, the right-click image tool for Mac.
 
 - [Install](#install)
 - [Compress to Size…](#compress-to-size)
@@ -16,8 +16,8 @@ Everything you need to install and use Desktop Converter, the right-click image 
 
 ## Install
 
-1. **Download** [Desktop-Converter.zip](https://github.com/sahilpatel9910/desktop-converter/releases/latest/download/Desktop-Converter.zip).
-2. **Unzip it** by double-clicking it in your Downloads folder. You get a folder called **Desktop Converter**.
+1. **Download** [Pixel-Press.zip](https://github.com/sahilpatel9910/pixel-press/releases/latest/download/Pixel-Press.zip).
+2. **Unzip it** by double-clicking it in your Downloads folder. You get a folder called **Pixel Press**.
 3. **Double-click each `.workflow` file** in that folder:
    - Compress to Size….workflow
    - Convert & Resize….workflow
@@ -153,7 +153,7 @@ These actions aren't from the App Store, so macOS may ask you to confirm them on
 Click **Allow**. The action needs to read the images you picked and save the new ones next to them.
 
 **"Couldn't convert: … not an image".**
-Desktop Converter only works on image files. Other files in your selection are skipped.
+Pixel Press only works on image files. Other files in your selection are skipped.
 
 **An image "couldn't get under" the size I picked.**
 The size was too small for that picture. Try a bigger size, or use *Convert & Resize…* to make it
@@ -164,7 +164,7 @@ Check **System Settings → Notifications** and make sure notifications are allo
 **Script Editor** or **Automator**.
 
 **Still not working?**
-[Open an issue](https://github.com/sahilpatel9910/desktop-converter/issues) and describe what
+[Open an issue](https://github.com/sahilpatel9910/pixel-press/issues) and describe what
 you clicked and what happened.
 
 ---
@@ -184,7 +184,7 @@ you clicked and what happened.
 ## FAQ
 
 **Are my photos uploaded anywhere?**
-No. Everything happens on your Mac. Desktop Converter doesn't use the internet at all.
+No. Everything happens on your Mac. Pixel Press doesn't use the internet at all.
 
 **Does it work on Windows or iPhone?**
 No. It uses tools built into macOS.

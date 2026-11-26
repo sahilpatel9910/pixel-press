@@ -1,5 +1,5 @@
 #!/bin/bash
-# Desktop Converter: installs Finder Quick Actions for images.
+# Pixel Press: installs Finder Quick Actions for images.
 # Run once with:  bash install-quick-actions.sh
 # Then right-click any image in Finder > Quick Actions.
 # To remove them later:  bash install-quick-actions.sh --uninstall
@@ -7,16 +7,16 @@ set -e
 
 [ "$(uname)" = "Darwin" ] || { echo "This installer is for macOS."; exit 1; }
 
-APP="$HOME/Library/Application Support/Desktop Converter"
+APP="$HOME/Library/Application Support/Pixel Press"
 SVC="$HOME/Library/Services"
 NAMES=("Convert to JPG" "Compress to Size…" "Convert & Resize…")
 OLD=("Convert to PNG" "Make PDF" "Compress for Email")
 
 if [ "${1:-}" = "--uninstall" ]; then
   for n in "${NAMES[@]}" "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
-  rm -rf "$APP"
+  rm -rf "$APP" "$HOME/Library/Application Support/Desktop Converter"
   /System/Library/CoreServices/pbs -update 2>/dev/null || true
-  echo "Removed the Desktop Converter Quick Actions."
+  echo "Removed the Pixel Press Quick Actions."
   exit 0
 fi
 
@@ -24,7 +24,7 @@ mkdir -p "$APP" "$SVC"
 for n in "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
 rm -rf "$SVC/Convert to JPG.workflow"
 mkdir -p "$SVC/Convert to JPG.workflow/Contents"
-cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_96C98099'
+cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_2981C3C3'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -57,8 +57,8 @@ cat > "$SVC/Convert to JPG.workflow/Contents"/Info.plist <<'DC_EOF_96C98099'
 	</array>
 </dict>
 </plist>
-DC_EOF_96C98099
-cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_FE4D2271'
+DC_EOF_2981C3C3
+cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_088E86C9'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -120,12 +120,12 @@ cat > "$SVC/Convert to JPG.workflow/Contents"/document.wflow <<'DC_EOF_FE4D2271'
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string># Desktop Converter Quick Action
-DC="$HOME/Library/Application Support/Desktop Converter"
+					<string># Pixel Press Quick Action
+DC="$HOME/Library/Application Support/Pixel Press"
 [ $# -gt 0 ] || exit 0
 
-notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
-alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
+notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Pixel Press" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
+alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Pixel Press" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
 # New files go right next to the originals (inside the folder, if a folder was picked).
 if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
@@ -133,7 +133,7 @@ SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #!/bin/bash
-# Desktop Converter: convert, resize and compress images.
+# Pixel Press: convert, resize and compress images.
 # Uses macOS's built-in `sips`. WebP output needs `cwebp` or ImageMagick (`magick`).
 # Written for the bash 3.2 that ships with macOS.
 #
@@ -452,7 +452,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>C1E93DA5-2090-4346-AB8E-456556CFB654</string>
+				<string>857770E3-0A52-4877-9AF5-FABC1412863F</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -462,9 +462,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>82F55BC5-9A36-480A-B02E-37AACBAC80D0</string>
+				<string>710AC4F5-3633-439A-87E2-357B91E875CA</string>
 				<key>UUID</key>
-				<string>8191BF3B-95B6-42CA-8275-9B12F0B6BC70</string>
+				<string>8D452D08-6AEE-491F-9F19-22B7FA44FA0B</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -592,11 +592,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_FE4D2271
+DC_EOF_088E86C9
 
 rm -rf "$SVC/Compress to Size….workflow"
 mkdir -p "$SVC/Compress to Size….workflow/Contents"
-cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_DC23CBA8'
+cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_EAD8AB2B'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -629,8 +629,8 @@ cat > "$SVC/Compress to Size….workflow/Contents"/Info.plist <<'DC_EOF_DC23CBA8
 	</array>
 </dict>
 </plist>
-DC_EOF_DC23CBA8
-cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_3CC7FCD5'
+DC_EOF_EAD8AB2B
+cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_5F2D7D62'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -692,12 +692,12 @@ cat > "$SVC/Compress to Size….workflow/Contents"/document.wflow <<'DC_EOF_3CC7
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string># Desktop Converter Quick Action
-DC="$HOME/Library/Application Support/Desktop Converter"
+					<string># Pixel Press Quick Action
+DC="$HOME/Library/Application Support/Pixel Press"
 [ $# -gt 0 ] || exit 0
 
-notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
-alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
+notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Pixel Press" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
+alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Pixel Press" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
 # New files go right next to the originals (inside the folder, if a folder was picked).
 if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
@@ -705,7 +705,7 @@ SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #!/bin/bash
-# Desktop Converter: convert, resize and compress images.
+# Pixel Press: convert, resize and compress images.
 # Uses macOS's built-in `sips`. WebP output needs `cwebp` or ImageMagick (`magick`).
 # Written for the bash 3.2 that ships with macOS.
 #
@@ -1058,7 +1058,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>5D64015A-7BCA-45E6-98BB-3C5DBE4D4646</string>
+				<string>A850DD75-42BD-4D34-B8AB-4499C8E7BAAF</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1068,9 +1068,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>D9FFA50D-4C06-447F-A57F-5EED59E3B7D3</string>
+				<string>C84D2795-D6D3-42AE-8FEE-E8C276D5553B</string>
 				<key>UUID</key>
-				<string>1E3354BD-11CB-4582-9EA9-03C398EC6412</string>
+				<string>DA626591-D508-46E5-ABA0-0FC9EED99B28</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1198,11 +1198,11 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_3CC7FCD5
+DC_EOF_5F2D7D62
 
 rm -rf "$SVC/Convert & Resize….workflow"
 mkdir -p "$SVC/Convert & Resize….workflow/Contents"
-cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_D1D12BEF'
+cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_802BBCE0'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1235,8 +1235,8 @@ cat > "$SVC/Convert & Resize….workflow/Contents"/Info.plist <<'DC_EOF_D1D12BEF
 	</array>
 </dict>
 </plist>
-DC_EOF_D1D12BEF
-cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_272267F1'
+DC_EOF_802BBCE0
+cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_59BE0D7B'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1298,12 +1298,12 @@ cat > "$SVC/Convert & Resize….workflow/Contents"/document.wflow <<'DC_EOF_2722
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string># Desktop Converter Quick Action
-DC="$HOME/Library/Application Support/Desktop Converter"
+					<string># Pixel Press Quick Action
+DC="$HOME/Library/Application Support/Pixel Press"
 [ $# -gt 0 ] || exit 0
 
-notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
-alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Desktop Converter" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
+notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Pixel Press" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" &gt;/dev/null 2&gt;&amp;1; }
+alert() { /usr/bin/osascript -e 'on run argv' -e 'display alert "Pixel Press" message (item 1 of argv) as warning' -e 'end run' "$1" &gt;/dev/null 2&gt;&amp;1; }
 
 # New files go right next to the originals (inside the folder, if a folder was picked).
 if [ -d "$1" ]; then OUT="$1"; else OUT="$(dirname "$1")"; fi
@@ -1311,7 +1311,7 @@ SCRIPT=$(/usr/bin/mktemp -t dconv-script)
 trap 'rm -f "$SCRIPT"' EXIT
 cat &gt; "$SCRIPT" &lt;&lt;'DC_CONVERTER_EOF'
 #!/bin/bash
-# Desktop Converter: convert, resize and compress images.
+# Pixel Press: convert, resize and compress images.
 # Uses macOS's built-in `sips`. WebP output needs `cwebp` or ImageMagick (`magick`).
 # Written for the bash 3.2 that ships with macOS.
 #
@@ -1594,7 +1594,7 @@ case "$LAST_SIZE" in "Keep original size"|"Large - 2560 px"|"Medium - 1600 px"|"
 FMT=$(/usr/bin/osascript - "$LAST_FMT" "$SUMMARY" &lt;&lt;'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Desktop Converter" with prompt (item 2 of argv) &amp; return &amp; return &amp; "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
+  set picked to choose from list {"JPG", "PNG", "HEIC", "PDF", "TIFF"} with title "Pixel Press" with prompt (item 2 of argv) &amp; return &amp; return &amp; "Convert to:" default items {item 1 of argv} OK button name "Next" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -1605,7 +1605,7 @@ APPLESCRIPT
 SIZE=$(/usr/bin/osascript - "$LAST_SIZE" "$SUMMARY" &lt;&lt;'APPLESCRIPT'
 on run argv
   activate
-  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Desktop Converter" with prompt (item 2 of argv) &amp; return &amp; return &amp; "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
+  set picked to choose from list {"Keep original size", "Large - 2560 px", "Medium - 1600 px", "Small - 1024 px", "Thumbnail - 400 px"} with title "Pixel Press" with prompt (item 2 of argv) &amp; return &amp; return &amp; "Size (longest side):" default items {item 1 of argv} OK button name "Convert" cancel button name "Cancel"
   if picked is false then return ""
   return item 1 of picked
 end run
@@ -1673,7 +1673,7 @@ exit 0
 				<key>Class Name</key>
 				<string>RunShellScriptAction</string>
 				<key>InputUUID</key>
-				<string>A5F55B24-B0E8-4EC8-8D2A-96C064D762C9</string>
+				<string>E4640652-C31B-4A1D-A8DF-797CBC38A316</string>
 				<key>Keywords</key>
 				<array>
 					<string>Shell</string>
@@ -1683,9 +1683,9 @@ exit 0
 					<string>Unix</string>
 				</array>
 				<key>OutputUUID</key>
-				<string>15813BA9-ECF0-41F4-8342-E880BF0A53CF</string>
+				<string>9EEC00A9-4981-4260-8EE0-B5069FA5F5DA</string>
 				<key>UUID</key>
-				<string>81B3519F-70FF-4D8A-B663-C49E8052906A</string>
+				<string>309E193B-926A-46F7-9678-686537B82211</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>Automator</string>
@@ -1813,7 +1813,7 @@ exit 0
 	</dict>
 </dict>
 </plist>
-DC_EOF_272267F1
+DC_EOF_59BE0D7B
 
 xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
 for n in "${NAMES[@]}"; do xattr -dr com.apple.quarantine "$SVC/$n.workflow" 2>/dev/null || true; done
