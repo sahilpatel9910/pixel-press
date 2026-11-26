@@ -4,7 +4,6 @@ conv = open(f"{root}/scripts/convert-images.sh").read()
 
 COMMON_HEAD = r'''# Desktop Converter Quick Action
 DC="$HOME/Library/Application Support/Desktop Converter"
-SCRIPT="$DC/convert-images.sh"
 [ $# -gt 0 ] || exit 0
 
 notify() { /usr/bin/osascript -e 'on run argv' -e 'display notification (item 2 of argv) with title "Desktop Converter" subtitle (item 1 of argv)' -e 'end run' "$1" "$2" >/dev/null 2>&1; }
@@ -128,8 +127,16 @@ ACTIONS = [
 ]
 OLD_NAMES = ["Convert to PNG", "Make PDF"]
 
+EMBED_EOF = "DC_CONVERTER_EOF"
+assert EMBED_EOF not in conv
+
 def action_script(setup):
-    return COMMON_HEAD + setup + COMMON_RUN
+    # Each Quick Action carries its own copy of the converter, so a .workflow file
+    # works on its own: double-click to install, nothing else needed.
+    embed = ('SCRIPT=$(/usr/bin/mktemp -t dconv-script)\n'
+             'trap \'rm -f "$SCRIPT"\' EXIT\n'
+             f"cat > \"$SCRIPT\" <<'{EMBED_EOF}'\n{conv}{EMBED_EOF}\n\n")
+    return COMMON_HEAD + embed + setup + COMMON_RUN
 
 def info_plist(name):
     return plistlib.dumps({"NSServices": [{
@@ -217,8 +224,6 @@ fi
 mkdir -p "$APP" "$SVC"
 for n in "${OLD[@]}"; do rm -rf "$SVC/$n.workflow"; done
 ''']
-out.append(heredoc('"$APP/convert-images.sh"', conv))
-out.append('chmod +x "$APP/convert-images.sh"\n\n')
 for name, opts in ACTIONS:
     w = f'"$SVC/{name}.workflow/Contents"'
     out.append(f'rm -rf "$SVC/{name}.workflow"\nmkdir -p {w}\n')
@@ -238,3 +243,26 @@ echo "  Then right-click any image or folder in Finder > Quick Actions."
 echo "  Results go into a 'Converted' folder next to your images. Originals are never changed."
 ''')
 open(f"{root}/quick-actions/install-quick-actions.sh", "w").write("".join(out))
+
+
+# ---------------------------------------------------------------------------
+# Shareable zip: double-click installers, no Terminal needed.
+import os, zipfile, shutil
+dist = f"{root}/dist"
+pkg = f"{dist}/Desktop Converter"
+shutil.rmtree(dist, ignore_errors=True)
+for name, opts in ACTIONS:
+    c = f"{pkg}/{name}.workflow/Contents"
+    os.makedirs(c)
+    open(f"{c}/Info.plist", "w").write(info_plist(name))
+    open(f"{c}/document.wflow", "w").write(wflow(opts))
+open(f"{pkg}/How to Install.html", "w").write(open(f"{root}/quick-actions/how-to-install.html").read())
+zpath = f"{dist}/Desktop-Converter.zip"
+with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
+    for dirpath, dirs, files in os.walk(pkg):
+        dirs.sort()
+        rel = os.path.relpath(dirpath, dist)
+        z.write(dirpath, rel + "/")
+        for f in sorted(files):
+            z.write(f"{dirpath}/{f}", f"{rel}/{f}")
+print("built", zpath)

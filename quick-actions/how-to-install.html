@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop Converter: How to Install</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --card: #ffffff; --text: #1d1d1f; --muted: #6e6e73;
+    --line: #e3e1dc; --accent: #0a66d8; --accent-soft: #e8f0fc; --key: #f0efeb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161617; --card: #222224; --text: #f2f2f4; --muted: #a1a1a6;
+      --line: #36363a; --accent: #4a9dff; --accent-soft: #1d2b40; --key: #2e2e31;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { font-size: 34px; line-height: 1.15; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .lede { color: var(--muted); margin: 0 0 32px; font-size: 19px; }
+  h2 { font-size: 22px; margin: 40px 0 14px; letter-spacing: -0.01em; }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  ol.steps > li {
+    counter-increment: step; position: relative; background: var(--card);
+    border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 18px 66px; margin-bottom: 12px;
+  }
+  ol.steps > li::before {
+    content: counter(step); position: absolute; left: 20px; top: 17px;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-weight: 600; display: grid; place-items: center; font-size: 15px;
+  }
+  ol.steps strong { display: block; margin-bottom: 2px; }
+  .muted { color: var(--muted); }
+  .path { font-weight: 600; }
+  kbd {
+    background: var(--key); border: 1px solid var(--line); border-radius: 6px;
+    padding: 1px 7px; font: 600 14px -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .actions { display: grid; gap: 12px; }
+  .action { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; }
+  .action b { font-size: 18px; }
+  .action p { margin: 4px 0 0; color: var(--muted); }
+  .note {
+    background: var(--accent-soft); border-radius: 14px; padding: 16px 20px; margin-top: 16px;
+  }
+  details {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 20px; margin-bottom: 10px;
+  }
+  summary { cursor: pointer; font-weight: 600; }
+  details p, details ol { margin: 10px 0 4px; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Desktop Converter</h1>
+  <p class="lede">Convert, resize and compress images by right-clicking them in Finder. It works on your Mac, without the internet, and never changes your original files.</p>
+
+  <h2>Install (about 1 minute)</h2>
+  <ol class="steps">
+    <li>
+      <strong>Double-click each of the three files that end in “.workflow”</strong>
+      <span class="muted">They're in this folder: Compress to Size…, Convert &amp; Resize… and Convert to JPG.</span>
+    </li>
+    <li>
+      <strong>Click “Install” each time macOS asks</strong>
+      <span class="muted">“Do you want to install the … quick action?” Then click Done.</span>
+    </li>
+    <li>
+      <strong>Switch them on</strong>
+      Open <span class="path">System Settings → General → Login Items &amp; Extensions</span>.
+      Under <span class="path">Extensions</span>, click <span class="path">Finder</span> and turn on the three Desktop Converter actions.
+      <div class="muted">Shortcut: right-click any image → Quick Actions → Customise…</div>
+    </li>
+  </ol>
+
+  <h2>Use it</h2>
+  <p>Right-click one image, several images or a folder → <span class="path">Quick Actions</span>, then pick:</p>
+  <div class="actions">
+    <div class="action">
+      <b>Compress to Size…</b>
+      <p>Shows how big your images are, then makes each one smaller than the size you choose: 2 MB for email, 1 MB, 500 KB, 200 KB for web forms, 100 KB or any size you type.</p>
+    </div>
+    <div class="action">
+      <b>Convert &amp; Resize…</b>
+      <p>Choose a format (JPG, PNG, HEIC, PDF, TIFF) and a size. It remembers your last choice, so next time you just press <kbd>Return</kbd> twice.</p>
+    </div>
+    <div class="action">
+      <b>Convert to JPG</b>
+      <p>One click. Perfect for iPhone photos (HEIC) that won't open on Windows.</p>
+    </div>
+  </div>
+  <div class="note">
+    New images go into a <b>Converted</b> folder next to the originals. A notification shows how much space you saved, and Finder highlights the new file.
+  </div>
+
+  <h2>If something doesn't work</h2>
+  <details>
+    <summary>The actions don't appear in the right-click menu</summary>
+    <p>Make sure they're switched on (step 3). If they still don't appear, log out of your Mac and back in.</p>
+  </details>
+  <details>
+    <summary>macOS shows a security warning</summary>
+    <p>These actions aren't from the App Store, so macOS may ask you to confirm them once. Open <span class="path">System Settings → Privacy &amp; Security</span>, scroll down and click <span class="path">Open Anyway</span>, then try again.</p>
+  </details>
+  <details>
+    <summary>macOS asks for access to your Desktop or Documents</summary>
+    <p>Click <span class="path">Allow</span>. The action needs to read the images you picked and save the new ones next to them.</p>
+  </details>
+  <details>
+    <summary>How do I remove it?</summary>
+    <ol>
+      <li>In Finder, press <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>G</kbd> and go to <span class="path">~/Library/Services</span></li>
+      <li>Move the three Desktop Converter “.workflow” files to the Bin.</li>
+    </ol>
+  </details>
+
+  <footer>Desktop Converter · Uses the image tools built into macOS. Your images never leave your Mac.</footer>
+</main>
+</body>
+</html>

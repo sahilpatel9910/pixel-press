@@ -40,7 +40,15 @@ MIT
 
 ## Right-click Quick Actions (no Claude needed)
 
-Run once on your Mac:
+**For people you share it with:** build the double-click version and send them the zip.
+It needs no Terminal: they unzip it, double-click each `.workflow` file, click Install,
+and follow `How to Install.html`.
+
+```bash
+python3 quick-actions/build-installer.py   # → dist/Desktop-Converter.zip
+```
+
+**Or from Terminal**, run once on your Mac:
 
 ```bash
 bash quick-actions/install-quick-actions.sh
