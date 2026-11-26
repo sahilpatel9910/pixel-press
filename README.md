@@ -46,6 +46,13 @@ Run once on your Mac:
 bash quick-actions/install-quick-actions.sh
 ```
 
-Then right-click any image (or several) in Finder → **Quick Actions** → **Convert to JPG**,
-**Convert to PNG**, **Compress for Email** or **Make PDF**. Results go into a `Converted` folder next
-to the images. Remove them with `bash quick-actions/install-quick-actions.sh --uninstall`.
+Turn them on once in **System Settings → General → Login Items & Extensions → Extensions → Finder**.
+Then right-click any image, several images or a folder → **Quick Actions**:
+
+- **Convert to JPG**: one click. Images that are already JPG are skipped.
+- **Compress for Email**: one click. Shrinks photos to 2000 px at good quality, usually 70–90% smaller.
+- **Convert & Resize…**: pick a format (JPG, PNG, HEIC, PDF, TIFF) and a size. It remembers your last choice.
+
+A notification says what happened and how much space was saved, and Finder shows the new file.
+Results go into a `Converted` folder next to the images; originals are never changed.
+Remove them with `bash quick-actions/install-quick-actions.sh --uninstall`.

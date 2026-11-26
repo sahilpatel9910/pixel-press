@@ -5,7 +5,10 @@
 #
 # Usage:
 #   convert-images.sh --to jpg|png|heic|tiff|gif|bmp|pdf|webp [--max PIXELS] [--quality 1-100]
-#                     [--out DIR] FILE_OR_FOLDER...
+#                     [--out DIR] [--skip-same] [--report FILE] FILE_OR_FOLDER...
+#
+# --skip-same  skip files already in the target format (when not resizing)
+# --report     write the paths of the new files to FILE, one per line
 #
 # Originals are never modified. Results go to --out (default ~/Desktop/Converted).
 # An existing file is never overwritten: "photo.jpg" becomes "photo-1.jpg", and so on.
@@ -16,6 +19,8 @@ TO=""
 MAX=""
 QUALITY=""
 OUT="$HOME/Desktop/Converted"
+SKIP_SAME=""
+REPORT=""
 INPUTS=()
 
 die() { echo "Error: $*" >&2; exit 1; }
@@ -26,7 +31,9 @@ while [ $# -gt 0 ]; do
     --max)     MAX="${2:-}"; shift 2 ;;
     --quality) QUALITY="${2:-}"; shift 2 ;;
     --out)     OUT="${2:-}"; shift 2 ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    --skip-same) SKIP_SAME=1; shift ;;
+    --report)  REPORT="${2:-}"; shift 2 ;;
+    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
     --)        shift; while [ $# -gt 0 ]; do INPUTS+=("$1"); shift; done ;;
     -*)        die "unknown option $1" ;;
     *)         INPUTS+=("$1"); shift ;;
@@ -100,13 +107,22 @@ human() {
   awk -v b="$1" 'BEGIN { if (b >= 1048576) printf "%.1f MB", b/1048576; else printf "%.0f KB", b/1024 }'
 }
 
-ok=0; failed=0; before_total=0; after_total=0
+ok=0; failed=0; skipped=0; before_total=0; after_total=0
+[ -n "$REPORT" ] && : > "$REPORT"
 TMPDIR_CONV=$(mktemp -d) || die "can't create a temporary folder"
 trap 'rm -rf "$TMPDIR_CONV"' EXIT
 
 for f in "${FILES[@]}"; do
   name=$(basename "$f")
   stem="${name%.*}"
+  if [ -n "$SKIP_SAME" ] && [ -z "$MAX" ]; then
+    ext=$(printf '%s' "${name##*.}" | tr '[:upper:]' '[:lower:]')
+    case "$ext" in jpeg) ext=jpg ;; tif) ext=tiff ;; esac
+    if [ "$ext" = "$TO" ]; then
+      echo "– $name: already $(printf '%s' "$TO" | tr '[:lower:]' '[:upper:]'), skipped"
+      skipped=$((skipped + 1)); continue
+    fi
+  fi
   dest=$(unique_path "$stem" "$TO")
 
   # Only shrink, never enlarge.
@@ -148,6 +164,7 @@ for f in "${FILES[@]}"; do
     b=$(wc -c < "$f" | tr -d ' '); a=$(wc -c < "$dest" | tr -d ' ')
     before_total=$((before_total + b)); after_total=$((after_total + a))
     echo "✓ $name → $(basename "$dest")  ($(human "$b") → $(human "$a"))"
+    [ -n "$REPORT" ] && printf '%s\n' "$dest" >> "$REPORT"
     ok=$((ok + 1))
   else
     rm -f "$dest"
@@ -157,7 +174,12 @@ for f in "${FILES[@]}"; do
 done
 
 echo
-echo "Done: $ok converted, $failed failed. Saved to: $OUT"
-[ $ok -gt 0 ] && echo "Total size: $(human "$before_total") → $(human "$after_total")"
-[ $ok -gt 0 ] || exit 1
+echo "Done: $ok converted, $skipped skipped, $failed failed. Saved to: $OUT"
+if [ $ok -gt 0 ]; then
+  change=$(awk -v b="$before_total" -v a="$after_total" 'BEGIN {
+    if (b <= 0) exit; p = (a - b) * 100 / b
+    if (p <= -1) printf " (%d%% smaller)", -p; else if (p >= 1) printf " (%d%% larger)", p }')
+  echo "Total size: $(human "$before_total") → $(human "$after_total")$change"
+fi
+[ $ok -gt 0 ] || [ $skipped -gt 0 ] || exit 1
 exit 0
