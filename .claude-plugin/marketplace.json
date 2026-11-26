@@ -1,0 +1,11 @@
+{
+  "name": "desktop-converter",
+  "description": "Convert, resize and compress images on your Mac by asking Claude",
+  "owner": { "name": "Sahil" },
+  "plugins": [
+    {
+      "name": "desktop-converter",
+      "source": "./"
+    }
+  ]
+}
